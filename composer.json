@@ -1,18 +1,17 @@
 {
-    "name": "furthestworld/rbac",
-    "description": "RBAC component for PHP applications.",
+    "name": "furthestworld/validator",
+    "description": "yeah, another params validate component for PHP applications.",
     "keywords": [
         "php",
-        "RBAC"
+        "validator"
     ],
     "require": {
-        "php": ">=5.5",
-        "furthestworld/libdb" : "1.0"
+        "php": ">=5.5"
     },
     "license": "MIT",
     "autoload": {
         "psr-0": {
-            "Rbac": "src/"
+            "Validation": "src/"
         }
     },
     "authors": [
