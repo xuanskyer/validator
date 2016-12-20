@@ -6,12 +6,13 @@
         "validator"
     ],
     "require": {
-        "php": ">=5.5"
+        "php": ">=5.6.19",
+        "symfony/validator":"3.2.1"
     },
     "license": "MIT",
     "autoload": {
         "psr-0": {
-            "Validation": "src/"
+            "FurthestWorld": "src/"
         }
     },
     "authors": [
