@@ -17,7 +17,7 @@ yeah, another params validate component for PHP applications.
 ```
 
 require_once __ROOT__ . '/vendor/autoload.php';
-use Validation\ValidatorService;
+use FurthestWorld\ValidatorService;
 ```
 
 * enjoy~ :)

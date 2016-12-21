@@ -7,14 +7,16 @@
     ],
     "require": {
         "php": ">=5.6.19",
-        "symfony/validator":"3.2.1"
+        "symfony/validator": "3.2.1"
     },
     "license": "MIT",
     "autoload": {
-        "psr-0": {
-            "FurthestWorld": "src/"
-        }
+        "psr-4": { "FurthestWorld\\Validator\\": "" },
+        "exclude-from-classmap": [
+            "/Tests/"
+        ]
     },
+
     "authors": [
         {
             "name": "xuanskyer",
