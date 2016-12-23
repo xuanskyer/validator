@@ -6,8 +6,7 @@
         "validator"
     ],
     "require": {
-        "php": ">=5.6.19",
-        "symfony/validator": "3.2.1"
+        "php": ">=5.6.19"
     },
     "license": "MIT",
     "autoload": {
