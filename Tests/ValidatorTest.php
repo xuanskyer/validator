@@ -2,13 +2,13 @@
 
 /**
  * 测试用例
+ * 这是一个很不规范的测试用例，请不要在意这些细节~~
  */
 
 include_once(dirname(__DIR__) . '/Src/Code/ConstService.php');
 include_once(dirname(__DIR__) . '/Src/Rules/NormalRules.php');
 include_once(dirname(__DIR__) . '/Src/Validator.php');
-include_once(dirname(__DIR__) . '/Src/RequestValidator.php');
-use FurthestWorld\Validator\Src\RequestValidator;
+use FurthestWorld\Validator\Src\Validator;
 
 class ValidatorTest extends \PHPUnit_Framework_TestCase {
 
@@ -17,15 +17,15 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase {
             'domain'    => 'furthestworld.com',
             'member_id' => 10,
         ];
-        RequestValidator::extend('extend_test', new TestExtendRules());
-        RequestValidator::formatParams(
+        Validator::extend('extend_test', new TestExtendRules());
+        Validator::formatParams(
             $params,
             [
                 'domain'    => ['format_rule' => 'strtoupper', 'default_value' => ''],
                 'member_id' => ['format_rule' => 'formatExtendMemberId:domain']
             ]
         );
-        RequestValidator::validateParams(
+        Validator::validateParams(
             $params,
             [
                 'domain'    => ['check_rule' => 'number|string#string:10,500'],
@@ -33,8 +33,8 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase {
             ]
         );
 
-        if (!RequestValidator::pass()) {
-            var_dump(RequestValidator::getErrors());
+        if (!Validator::pass()) {
+            var_dump(Validator::getErrors());
         } else {
             var_dump("\r\n验证通过！");
         }
