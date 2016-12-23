@@ -6,7 +6,6 @@ yeah, another params validate component for PHP applications.
 
 ## 安装
 * 在项目的composer.json文件中的require项中添加：
-
 ```
 "furthestworld/validator": "~1.0"
 ```
@@ -15,14 +14,15 @@ yeah, another params validate component for PHP applications.
 * 在需要使用Validator服务的地方添加：
 
 ```
-
 require_once __ROOT__ . '/vendor/autoload.php';
 use FurthestWorld\Validator\Src\Validator;
 ```
 
-* 食用方法
-
+## 食用方法
 ```
+//扩展验证规则实例
+Validator::extend('extend_test', new TestExtendRules());
+
 Validator::formatParams(
     $params,
     [
@@ -33,7 +33,7 @@ Validator::formatParams(
 Validator::validateParams(
     $params,
     [
-        'domain'    => ['check_rule' => 'number|string#string:10,500'],
+        'domain'    => ['check_rule' => 'number#numberGt0|string#string:10,500'],
         'member_id' => ['check_rule' => 'extendEq:20#number'],
     ]
 );
@@ -46,7 +46,43 @@ if (!Validator::pass()) {
 }
 ```
 
-> 语法说明
+## 语法说明
 
-* enjoy~ :)
+### 参数格式化
+
+* format_rule
+规则： 格式化方法（PHP函数或自定义函数）：格式化参数（若为空则默认为当前字段的值）
+
+* default_value
+参数默认值设置
+
+* force_value 
+强制重置参数
+
+### 参数验证
+
+* check_rule
+`|` ：`或验证`（满足其中的至少一项验证）
+`#` ：`与验证`（满足其中所有的验证项）
+`:` ：方法和参数分隔符
+`,` ：多个参数分隔符
+如上面的规则：`'number#numberGt0|string#string:10,500'` 解析成PHP代码逻辑相当于：
+```
+   if((number && numberGt0) || (string && string:10,500)){
+       ...
+   }
+```
+
+其中的`number`、`numberGt0`、`string`、都是验证方法
+
+### 规则实例扩展
+
+`format_rule` 和 `check_rule` 除了使用组件自带的格式化和验证方法，也支持自定义方法。
+只需要把自定义的规则实例注册到组件的扩展规则中就可以了，如：
+
+```
+Validator::extend('extend_test', new TestExtendRules());
+```
+
+## enjoy~ :)
 
