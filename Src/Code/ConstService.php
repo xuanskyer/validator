@@ -19,18 +19,18 @@ class CodeService {
     const CODE_INVALID_PARAMS = [100, '非法参数：参数必须为数组！'];
     const CODE_INVALID_RULES  = [101, '非法验证规则：验证规则必须为数组！'];
     //1-1000保留为内部错误码使用
-    const CODE_PARAM_OK                = [1000, '参数%s验证通过！'];
-    const CODE_NO_PARAM_NAME           = [1001, '参数名%s不能为空！'];
-    const CODE_INVALID_CHECK_TYPE      = [1002, '参数%s验证方式非法！'];
-    const CODE_NO_EXISTED_CHECK_METHOD = [1003, '参数%s验证方法不存在！'];
-    const CODE_MUST_NOT_EMPTY          = [1004, '参数%s不能为空！'];
-    const CODE_MUST_EMPTY              = [1005, '参数%s必须为空！'];
-    const CODE_MUST_NUMBER             = [1006, '参数%s必须为数字！'];
-    const CODE_MUST_STRING             = [1007, '参数%s必须为字符串'];
-    const CODE_MUST_ARRAY              = [1008, '参数%s必须为数组！'];
-    const CODE_MUST_NUMBER_GT0         = [1009, '参数%s必须为大于0的数字！'];
-    const CODE_STRING_INVALID_MIN      = [1010, '参数%s长度小于最小长度%d'];
-    const CODE_STRING_INVALID_MAX      = [1011, '参数%s长度大于最大长度%d'];
+    const CODE_PARAM_OK                = [1000, '参数验证通过！'];
+    const CODE_NO_PARAM_NAME           = [1001, '参数名不能为空！'];
+    const CODE_INVALID_CHECK_TYPE      = [1002, '参数验证方式非法！'];
+    const CODE_NO_EXISTED_CHECK_METHOD = [1003, '参数验证方法不存在！'];
+    const CODE_MUST_NOT_EMPTY          = [1004, '参数不能为空！'];
+    const CODE_MUST_EMPTY              = [1005, '参数必须为空！'];
+    const CODE_MUST_NUMBER             = [1006, '参数必须为数字！'];
+    const CODE_MUST_STRING             = [1007, '参数必须为字符串'];
+    const CODE_MUST_ARRAY              = [1008, '参数必须为数组！'];
+    const CODE_MUST_NUMBER_GT0         = [1009, '参数必须为大于0的数字！'];
+    const CODE_STRING_INVALID_MIN      = [1010, '参数长度小于最小长度%d'];
+    const CODE_STRING_INVALID_MAX      = [1011, '参数长度大于最大长度%d'];
 
     public static function message($code = 0) {
 

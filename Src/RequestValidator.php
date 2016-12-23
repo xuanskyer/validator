@@ -10,6 +10,7 @@ namespace FurthestWorld\Validator\Src;
 
 use FurthestWorld\Validator\Src\Code\CodeService;
 use FurthestWorld\Validator\Src\Rules\NormalRules;
+
 class RequestValidator extends Validator {
 
     const OPERATE_TYPE_OR       = '|';  //验证类型：或
@@ -17,9 +18,9 @@ class RequestValidator extends Validator {
     const OPERATE_METHOD_PARAMS = ':';  //方法和参数分割符
     const OPERATE_MULTI_PARAMS  = ',';  //多个参数直接分隔符
 
-    static private $errors = [];
-
-    static $check_res = false;  //验证是否通过
+    static private $errors       = [];
+    static private $extend_rules = [];
+    static private $check_res    = false;  //验证是否通过
 
     /**
      * @desc 是否验证通过
@@ -34,7 +35,7 @@ class RequestValidator extends Validator {
     }
 
     /**
-     * @node_name 格式化参数
+     * @desc      参数格式化
      * @param array $params
      *
      * @param array $format_config
@@ -89,6 +90,12 @@ class RequestValidator extends Validator {
         return $params;
     }
 
+    /**
+     * @desc 参数验证
+     * @param array $params
+     * @param array $rules
+     * @return array|bool
+     */
     public static function validateParams($params = [], $rules = []) {
         if (!is_array($params) || empty($params)) {
             self::$errors = [CodeService::CODE_INVALID_PARAMS];
@@ -119,7 +126,19 @@ class RequestValidator extends Validator {
     }
 
 
-    public static function checkAndSetCode($param_name = '', $param_value = '', $check_rule = '') {
+    /**
+     * @node_name 扩展验证规则库
+     * @param $extend_name
+     * @param $extend_obj
+     */
+    public static function extend($extend_name, $extend_obj) {
+        if (!empty($extend_name) && is_object($extend_obj) && !isset(self::$extend_rules[$extend_name])) {
+            self::$extend_rules[$extend_name] = $extend_obj;
+        }
+    }
+
+
+    protected static function checkAndSetCode($param_name = '', $param_value = '', $check_rule = '') {
         $res_code         = CodeService::CODE_FAIL;
         $check_or_methods = self::parseCheckMethods($check_rule);
         foreach ($check_or_methods as $check_and_list) {
@@ -140,7 +159,7 @@ class RequestValidator extends Validator {
      * @param array  $and_methods
      * @return int|mixed
      */
-    public static function checkParamsRule($param_name = '', $param_value = '', $and_methods = []) {
+    protected static function checkParamsRule($param_name = '', $param_value = '', $and_methods = []) {
         if (empty($param_name)) {
             return CodeService::CODE_NO_PARAM_NAME;
         }
@@ -172,7 +191,7 @@ class RequestValidator extends Validator {
      * @param string $check_rule
      * @return array
      */
-    public static function parseCheckMethods($check_rule = '') {
+    protected static function parseCheckMethods($check_rule = '') {
         $parsed_methods = [];
         if (!empty($check_rule)) {
             $explode_or = explode(self::OPERATE_TYPE_OR, $check_rule);
@@ -193,13 +212,14 @@ class RequestValidator extends Validator {
         $parsed_methods = [];
         if (!empty($check_and_rule)) {
             $explode_check_type = explode(self::OPERATE_TYPE_AND, $check_and_rule);
+            $normal_rule_obj    = new NormalRules();
             foreach ($explode_check_type as $check) {
                 if (empty($check)) {
                     continue;
                 }
                 $check_exp  = explode(self::OPERATE_METHOD_PARAMS, $check);
                 $check_name = "param" . ucfirst($check_exp[0]);
-                if (method_exists(new NormalRules(), $check_name)) {
+                if (method_exists($normal_rule_obj, $check_name)) {
                     $check_params = [];
                     if (isset($check_exp[1]) && !empty($check_exp[1])) {
                         $check_params = explode(self::OPERATE_MULTI_PARAMS, $check_exp[1]);
@@ -207,10 +227,26 @@ class RequestValidator extends Validator {
                     array_push(
                         $parsed_methods,
                         [
-                            [__NAMESPACE__ . '\Rules\NormalRules', $check_name],
+                            [get_class($normal_rule_obj), $check_name],
                             $check_params
                         ]
                     );
+                } else {
+                    foreach (self::$extend_rules as $extend_name => $extend_obj) {
+                        if (method_exists($extend_obj, $check_name)) {
+                            $check_params = [];
+                            if (isset($check_exp[1]) && !empty($check_exp[1])) {
+                                $check_params = explode(self::OPERATE_MULTI_PARAMS, $check_exp[1]);
+                            }
+                            array_push(
+                                $parsed_methods,
+                                [
+                                    [get_class($extend_obj), $check_name],
+                                    $check_params
+                                ]
+                            );
+                        }
+                    }
                 }
             }
         }
