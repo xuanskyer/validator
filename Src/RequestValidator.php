@@ -38,7 +38,7 @@ class RequestValidator extends Validator {
      * @desc      参数格式化
      * @param array $params
      *
-     * @param array $format_config
+     * @param array $format_rules
      * @example   [
      *     ['name' => 'domain', 'default_value' => ''],
      *     ['name' => 'member_id', 'default_value' => 2016],
@@ -50,39 +50,42 @@ class RequestValidator extends Validator {
      *     ]
      * @return array
      */
-    public static function formatParams(&$params = [], $format_config = []) {
-        if (is_array($format_config) && !empty($format_config)) {
-            $valid_fields = array_column($format_config, 'name');
+    public static function formatParams(&$params = [], $format_rules = []) {
+        if (is_array($format_rules) && !empty($format_rules)) {
+            $valid_fields = array_keys($format_rules);
             foreach ($params as $key => $val) {
                 if (!in_array($key, $valid_fields)) {
                     unset($params[$key]);
                 }
             }
-            foreach ($format_config as $key => $val) {
-                if (isset($val['force_value'])) {
-                    $params[$val['name']] = $val['force_value'];
+            foreach ($format_rules as $field => $rule) {
+                if (isset($rule['force_value'])) {
+                    $params[$field] = $rule['force_value'];
                     continue;
                 }
-                if (!isset($val['name']) || empty($val['name'])) {
+                if (empty($field)) {
                     continue;
                 }
-                if (isset($val['default_value']) && empty($params[$val['name']])) {
-                    $params[$val['name']] = $val['default_value'];
+                if (isset($rule['default_value']) && empty($params[$field])) {
+                    $params[$field] = $rule['default_value'];
                     continue;
                 }
-                if (isset($val['format_method']) && !empty($val['format_method'])) {
-                    $explode_method = explode(self::OPERATE_METHOD_PARAMS, $val['format_method'], 2);
-                    if (method_exists(new NormalRules(), $explode_method[0])) {
-                        $method_param         = isset($explode_method[1]) && isset($params[$explode_method[1]])
-                            ? $params[$explode_method[1]]
-                            : (isset($params[$val['name']]) ? $params[$val['name']] : '');
-                        $params[$val['name']] = call_user_func([__NAMESPACE__ . '\Rules\NormalRules', $explode_method[0]], $method_param);
-                    }
-                    if (function_exists($explode_method[0])) {
-                        $method_param         = isset($explode_method[1]) && isset($params[$explode_method[1]])
-                            ? $params[$explode_method[1]]
-                            : (isset($params[$val['name']]) ? $params[$val['name']] : '');
-                        $params[$val['name']] = $explode_method[0]($method_param);
+                if (isset($rule['format_method']) && !empty($rule['format_method'])) {
+                    $explode_method = explode(self::OPERATE_METHOD_PARAMS, $rule['format_method'], 2);
+                    $method_param   = isset($explode_method[1]) && isset($params[$explode_method[1]])
+                        ? $params[$explode_method[1]]
+                        : (isset($params[$field]) ? $params[$field] : '');
+                    $normal_rules_obj = new NormalRules();
+                    if (method_exists($normal_rules_obj, $explode_method[0])) {
+                        $params[$field] = call_user_func([get_class($normal_rules_obj), $explode_method[0]], $method_param);
+                    }else if (function_exists($explode_method[0])) {
+                        $params[$field] = $explode_method[0]($method_param);
+                    }else{
+                        foreach (self::$extend_rules as $extend_name => $extend_obj) {
+                            if (method_exists($extend_obj, $explode_method[0])) {
+                                $params[$field] = call_user_func([get_class($extend_obj), $explode_method[0]], $method_param);
+                            }
+                        }
                     }
                 }
             }
@@ -105,24 +108,29 @@ class RequestValidator extends Validator {
             self::$errors = [CodeService::CODE_INVALID_RULES];
             return false;
         }
-        foreach ($rules as $rule) {
-            if (!isset($rule['name']) || !isset($params[$rule['name']])) {
-                array_push(self::$errors, [$rule['name'] => CodeService::CODE_NO_PARAM_NAME]);
+        foreach ($rules as $field => $rule) {
+            if (!is_array($rule) || empty($rule)) {
+                self::$errors = [CodeService::CODE_INVALID_RULES];
+                return false;
+            }
+            if (!isset($field) || !isset($params[$field])) {
+                array_push(self::$errors, [$field => CodeService::CODE_NO_PARAM_NAME]);
                 return false;
             } else {
                 $res_code = self::checkAndSetCode(
-                    $rule['name'],
-                    isset($params[$rule['name']]) ? $params[$rule['name']] : '',
+                    $field,
+                    isset($params[$field]) ? $params[$field] : '',
                     isset($rule['check_rule']) ? $rule['check_rule'] : ''
                 );
 
                 if (CodeService::CODE_OK != $res_code) {
-                    self::$errors = [$rule['name'] => $res_code];
+                    self::$errors = [$field => $res_code];
                     return false;
                 }
             }
         }
-        return CodeService::CODE_OK;
+        self::$check_res = true;
+        return self::$check_res;
     }
 
 
@@ -218,7 +226,7 @@ class RequestValidator extends Validator {
                     continue;
                 }
                 $check_exp  = explode(self::OPERATE_METHOD_PARAMS, $check);
-                $check_name = "param" . ucfirst($check_exp[0]);
+                $check_name = "check" . ucfirst($check_exp[0]);
                 if (method_exists($normal_rule_obj, $check_name)) {
                     $check_params = [];
                     if (isset($check_exp[1]) && !empty($check_exp[1])) {

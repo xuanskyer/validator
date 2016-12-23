@@ -16,7 +16,7 @@ class NormalRules {
      * @param $param_value
      * @return int
      */
-    public static function paramEmpty($param_value) {
+    public static function checkEmpty($param_value) {
         return empty($param_value) ? CodeService::CODE_OK : CodeService::CODE_MUST_EMPTY;
     }
 
@@ -26,7 +26,7 @@ class NormalRules {
      * @param $param_value
      * @return int
      */
-    public static function paramNotEmpty($param_value) {
+    public static function checkNotEmpty($param_value) {
         return !empty($param_value) ? CodeService::CODE_OK : CodeService::CODE_MUST_NOT_EMPTY;
     }
 
@@ -35,7 +35,7 @@ class NormalRules {
      * @param $param_value
      * @return int
      */
-    public static function paramNumber($param_value) {
+    public static function checkNumber($param_value) {
         return is_numeric($param_value) ? CodeService::CODE_OK : CodeService::CODE_MUST_NUMBER;
     }
 
@@ -44,7 +44,7 @@ class NormalRules {
      * @param $param_value
      * @return int
      */
-    public static function paramNumberGt0($param_value) {
+    public static function checkNumberGt0($param_value) {
         return (is_numeric($param_value) && $param_value > 0) ? CodeService::CODE_OK : CodeService::CODE_MUST_NUMBER_GT0;
     }
 
@@ -55,7 +55,7 @@ class NormalRules {
      * @param int $max_length
      * @return int
      */
-    public static function paramString($param_value, $min_length = 0, $max_length = 255) {
+    public static function checkString($param_value, $min_length = 0, $max_length = 255) {
         if (!is_string($param_value)) {
             return CodeService::CODE_MUST_STRING;
         } elseif (strlen($param_value) < $min_length) {
@@ -72,8 +72,13 @@ class NormalRules {
      * @param $param_value
      * @return int
      */
-    public static function paramArray($param_value) {
+    public static function checkArray($param_value) {
 
         return is_array($param_value) ? CodeService::CODE_OK : CodeService::CODE_MUST_ARRAY;
+    }
+
+
+    public static function formatExtendDomain($param_value){
+        return "http://{$param_value}";
     }
 }
