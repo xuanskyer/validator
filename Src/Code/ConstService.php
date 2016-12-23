@@ -31,6 +31,14 @@ class CodeService {
     const CODE_MUST_NUMBER_GT0         = [1009, '参数必须为大于0的数字！'];
     const CODE_STRING_INVALID_MIN      = [1010, '参数长度小于最小长度%d'];
     const CODE_STRING_INVALID_MAX      = [1011, '参数长度大于最大长度%d'];
+    const CODE_NOT_SAME                = [1012, '参数不相等'];
+    const CODE_NOT_STRICT_SAME         = [1013, '参数不严格相等'];
+    const CODE_INVALID_EMAIL           = [1014, '邮箱格式不合法！'];
+    const CODE_INVALID_URL             = [1015, 'URL格式不合法！'];
+    const CODE_INVALID_IP              = [1016, 'IP格式不合法！'];
+    const CODE_INVALID_IPV6            = [1017, 'IPV6格式不合法！'];
+    const CODE_INVALID_REGEX_MATCH     = [1018, '正则规则匹配失败！'];
+    const CODE_NOT_IN_LIST             = [1019, '参数不在指定列表中！'];
 
     public static function message($code = 0) {
 

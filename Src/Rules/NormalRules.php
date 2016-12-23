@@ -30,13 +30,32 @@ class NormalRules {
         return !empty($param_value) ? CodeService::CODE_OK : CodeService::CODE_MUST_NOT_EMPTY;
     }
 
+    public static function checkEq($param_value, $set_value) {
+        return self::checkSame($param_value, $set_value);
+    }
+
     /**
      * @node_name 要求参数必须为数字
-     * @param $param_value
      * @return int
      */
-    public static function checkNumber($param_value) {
-        return is_numeric($param_value) ? CodeService::CODE_OK : CodeService::CODE_MUST_NUMBER;
+    public static function checkNumber() {
+        $args_num  = func_num_args();
+        $args_list = func_get_args();
+        if (3 == $args_num) {
+            if ($args_list[0] < $args_list[1]) {
+                return CodeService::CODE_STRING_INVALID_MIN;
+            }
+            if ($args_list[0] > $args_list[2]) {
+                return CodeService::CODE_STRING_INVALID_MAX;
+            }
+        } elseif (2 == $args_num) {
+            if ($args_list[0] < $args_list[1]) {
+                return CodeService::CODE_STRING_INVALID_MIN;
+            }
+        } elseif (1 == $args_num) {
+            return is_numeric($args_list[0]) ? CodeService::CODE_OK : CodeService::CODE_MUST_NUMBER;
+        }
+        return CodeService::CODE_OK;
     }
 
     /**
@@ -77,8 +96,141 @@ class NormalRules {
         return is_array($param_value) ? CodeService::CODE_OK : CodeService::CODE_MUST_ARRAY;
     }
 
+    /**
+     * @node_name 验证是否相等
+     * @param $param_value
+     * @param $compare_value
+     * @return array
+     */
+    public static function checkSame($param_value, $compare_value) {
+        if ($param_value == $compare_value) {
+            return CodeService::CODE_OK;
+        }
+        return CodeService::CODE_NOT_SAME;
+    }
 
-    public static function formatExtendDomain($param_value){
+    /**
+     * @node_name 验证是否是合法的日期
+     * @param $param_value
+     * @param $compare_value
+     * @return array
+     */
+    public static function checkValidDate($param_value, $compare_value) {
+        return CodeService::CODE_OK;
+    }
+
+    /**
+     * @node_name 验证是否是合法的时间戳
+     * @param $param_value
+     * @param $compare_value
+     * @return array
+     */
+    public static function checkValidTimestamp($param_value, $compare_value) {
+        return CodeService::CODE_OK;
+    }
+
+    /**
+     * @node_name 验证是否合法邮箱
+     * @param $param_value
+     * @return array
+     */
+    public static function checkEmail($param_value) {
+        if (!filter_var($param_value, FILTER_VALIDATE_EMAIL)) {
+            return CodeService::CODE_INVALID_EMAIL;
+        }
+        return CodeService::CODE_OK;
+    }
+
+    /**
+     * @node_name 验证是否合法json
+     * @param $param_value
+     * @return array
+     */
+    public static function checkJson($param_value) {
+        return CodeService::CODE_OK;
+    }
+
+    /**
+     * @node_name 验证是否合法IP
+     * @param $param_value
+     * @return array
+     */
+    public static function checkIp($param_value) {
+        if (!filter_var($param_value, FILTER_VALIDATE_IP)) {
+            return CodeService::CODE_INVALID_IP;
+        }
+        return CodeService::CODE_OK;
+    }
+
+    /**
+     * @node_name 验证是否合法IP
+     * @param $param_value
+     * @return array
+     */
+    public static function checkIpV6($param_value) {
+        if (!filter_var($param_value, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+            return CodeService::CODE_INVALID_IPV6;
+        }
+        return CodeService::CODE_OK;
+    }
+
+    /**
+     * @node_name 验证是否在列表中
+     * @return array
+     */
+    public static function checkIn() {
+        $args_list   = func_get_args();
+        $param_value = array_shift($args_list);
+        if (!in_array($param_value, $args_list)) {
+            return CodeService::CODE_NOT_IN_LIST;
+        }
+        return CodeService::CODE_OK;
+    }
+
+    /**
+     * @node_name 验证是否不在列表中
+     * @return array
+     */
+    public static function checkNotIn() {
+        $args_list   = func_get_args();
+        $param_value = array_shift($args_list);
+        if (in_array($param_value, $args_list)) {
+            return CodeService::CODE_NOT_IN_LIST;
+        }
+        return CodeService::CODE_OK;
+    }
+
+    /**
+     * @node_name 验证是否匹配指定的正则
+     * @param $param_value
+     * @param $pattern
+     * @return array
+     */
+    public static function checkRegex($param_value, $pattern) {
+        if (!preg_match($pattern, $param_value)) {
+            return CodeService::CODE_INVALID_REGEX_MATCH;
+        }
+        return CodeService::CODE_OK;
+    }
+
+    /**
+     * @node_name 验证是否合法URL
+     * @param $param_value
+     * @return array
+     */
+    public static function checkUrl($param_value) {
+        if (!filter_var($param_value, FILTER_VALIDATE_URL)) {
+            return CodeService::CODE_INVALID_URL;
+        }
+        return CodeService::CODE_OK;
+    }
+
+    /**
+     * @node_name 格式化域名
+     * @param $param_value
+     * @return string
+     */
+    public static function formatExtendDomain($param_value) {
         return "http://{$param_value}";
     }
 }

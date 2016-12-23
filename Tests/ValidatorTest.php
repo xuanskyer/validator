@@ -16,20 +16,23 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase {
         $params = [
             'domain'    => 'furthestworld.com',
             'member_id' => 10,
+            'level_id' => '20',
         ];
         Validator::extend('extend_test', new TestExtendRules());
         Validator::formatParams(
             $params,
             [
                 'domain'    => ['format_rule' => 'strtoupper', 'default_value' => ''],
-                'member_id' => ['format_rule' => 'formatExtendMemberId:domain']
+                'member_id' => ['format_rule' => 'formatExtendMemberId:domain'],
+                'level_id' => [],
             ]
         );
         Validator::validateParams(
             $params,
             [
                 'domain'    => ['check_rule' => 'number|string#string:10,500'],
-                'member_id' => ['check_rule' => 'extendEq:20#number'],
+                'member_id' => ['check_rule' => 'extendEq:20#number:1,20#in:1,2,3,4,20'],
+                'level_id' => ['check_rule' => 'same:'.$params['member_id']],
             ]
         );
 
