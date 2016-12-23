@@ -7,16 +7,6 @@
  */
 namespace FurthestWorld\Validator\Src;
 
-abstract class Validator {
-
-    protected $adapter = null;
-    private $messages = null;
-
-    public function __construct() {
-
-    }
-
-    public abstract function formatParams();
-    public abstract function validateParams();
+class Validator {
 
 }

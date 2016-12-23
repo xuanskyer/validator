@@ -9,20 +9,8 @@ use FurthestWorld\Validator\Src\RequestValidator;
 
 class ValidatorTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @var ValidatorBuilderInterface
-     */
-    protected $builder;
 
-    protected function setUp()
-    {
-        $this->builder = new RequestValidator();
-    }
 
-    protected function tearDown()
-    {
-        $this->builder = null;
-    }
 
     public function testValidateParams()
     {
@@ -34,12 +22,9 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
             'title' => 'required|unique:posts|max:255',
             'created_at' => 'required',
         ];
-        $this->builder->validateParams($params, $rules);
+        $res = RequestValidator::validateParams($params, $rules);
+        var_dump($res);
     }
 
-    public function testAddObjectInitializers()
-    {
-        $this->assertSame($this->builder, $this->builder->addObjectInitializers(array()));
-    }
 
 }
