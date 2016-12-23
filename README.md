@@ -73,7 +73,8 @@ if (!Validator::pass()) {
    }
 ```
 
-其中的`number`、`numberGt0`、`string`、都是验证方法
+> 为了避免方法名和PHP关键字冲突，对应规则中的方法在解析成方法名时会自动加上前缀 `check`
+> 比如上面的`number`、`numberGt0`、`string` 验证方法对应的方法分别为： `checkNumber`、`checkNumberGt0`、`checkString`
 
 ### 规则实例扩展
 
