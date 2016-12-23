@@ -115,22 +115,15 @@ class NormalRules {
      * @param string $check_format
      * @return array
      */
-    public static function checkValidDate($param_value, $check_format = 'Y-m-d H:i:s') {
+    public static function checkValidDate($param_value, $check_format = '') {
+        if(empty($check_format)){
+            return strtotime($param_value) ? CodeService::CODE_OK : CodeService::CODE_INVALID_DATE;
+        }
         $res = date_parse_from_format($check_format, $param_value);
         if(0 == $res['warning_count'] && 0 == $res['error_count']){
             return CodeService::CODE_OK;
         }
         return CodeService::CODE_INVALID_DATE;
-    }
-
-    /**
-     * @node_name 验证是否是合法的时间戳
-     * @param $param_value
-     * @param $compare_value
-     * @return array
-     */
-    public static function checkValidTimestamp($param_value, $compare_value) {
-        return CodeService::CODE_OK;
     }
 
     /**
