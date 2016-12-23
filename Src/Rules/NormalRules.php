@@ -111,12 +111,16 @@ class NormalRules {
 
     /**
      * @node_name 验证是否是合法的日期
-     * @param $param_value
-     * @param $compare_value
+     * @param        $param_value
+     * @param string $check_format
      * @return array
      */
-    public static function checkValidDate($param_value, $compare_value) {
-        return CodeService::CODE_OK;
+    public static function checkValidDate($param_value, $check_format = 'Y-m-d H:i:s') {
+        $res = date_parse_from_format($check_format, $param_value);
+        if(0 == $res['warning_count'] && 0 == $res['error_count']){
+            return CodeService::CODE_OK;
+        }
+        return CodeService::CODE_INVALID_DATE;
     }
 
     /**

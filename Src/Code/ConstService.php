@@ -39,6 +39,7 @@ class CodeService {
     const CODE_INVALID_IPV6            = [1017, 'IPV6格式不合法！'];
     const CODE_INVALID_REGEX_MATCH     = [1018, '正则规则匹配失败！'];
     const CODE_NOT_IN_LIST             = [1019, '参数不在指定列表中！'];
+    const CODE_INVALID_DATE            = [1020, '日期格式非法！'];
 
     public static function message($code = 0) {
 

@@ -13,10 +13,12 @@ use FurthestWorld\Validator\Src\Validator;
 class ValidatorTest extends \PHPUnit_Framework_TestCase {
 
     public function testValidateParams() {
+
         $params = [
             'domain'    => 'furthestworld.com',
             'member_id' => 10,
             'level_id' => '20',
+            'created_at' => '2016-12-23 18:28:40'
         ];
         Validator::extend('extend_test', new TestExtendRules());
         Validator::formatParams(
@@ -25,6 +27,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase {
                 'domain'    => ['format_rule' => 'strtoupper', 'default_value' => ''],
                 'member_id' => ['format_rule' => 'formatExtendMemberId:domain'],
                 'level_id' => [],
+                'created_at' => [],
             ]
         );
         Validator::validateParams(
@@ -33,6 +36,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase {
                 'domain'    => ['check_rule' => 'number|string#string:10,500'],
                 'member_id' => ['check_rule' => 'extendEq:20#number:1,20#in:1,2,3,4,20'],
                 'level_id' => ['check_rule' => 'same:'.$params['member_id']],
+                'created_at' => ['check_rule' => 'validDate'],
             ]
         );
 
