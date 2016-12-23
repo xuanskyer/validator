@@ -70,8 +70,8 @@ class RequestValidator extends Validator {
                     $params[$field] = $rule['default_value'];
                     continue;
                 }
-                if (isset($rule['format_method']) && !empty($rule['format_method'])) {
-                    $explode_method = explode(self::OPERATE_METHOD_PARAMS, $rule['format_method'], 2);
+                if (isset($rule['format_rule']) && !empty($rule['format_rule'])) {
+                    $explode_method = explode(self::OPERATE_METHOD_PARAMS, $rule['format_rule'], 2);
                     $method_param   = isset($explode_method[1]) && isset($params[$explode_method[1]])
                         ? $params[$explode_method[1]]
                         : (isset($params[$field]) ? $params[$field] : '');

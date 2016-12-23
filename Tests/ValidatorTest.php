@@ -21,8 +21,8 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase {
         RequestValidator::formatParams(
             $params,
             [
-                'domain'    => ['default_value' => '', 'format_method' => 'strtoupper'],
-                'member_id' => ['format_method' => 'formatExtendMemberId:domain']
+                'domain'    => ['format_rule' => 'strtoupper', 'default_value' => ''],
+                'member_id' => ['format_rule' => 'formatExtendMemberId:domain']
             ]
         );
         RequestValidator::validateParams(
@@ -35,7 +35,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase {
 
         if (!RequestValidator::pass()) {
             var_dump(RequestValidator::getErrors());
-        }else{
+        } else {
             var_dump("\r\n验证通过！");
         }
     }
@@ -62,7 +62,7 @@ class TestExtendRules {
         return [999, '呵呵:不相等~'];
     }
 
-    public static function formatExtendMemberId($param_value){
+    public static function formatExtendMemberId($param_value) {
         return intval($param_value) + 20;
     }
 
