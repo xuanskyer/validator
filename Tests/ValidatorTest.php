@@ -3,27 +3,28 @@
 /**
  * 测试用例
  */
-namespace FurthestWorld\Validator\Tests;
 
+include_once(dirname(__DIR__) . '/Src/Code/ConstService.php');
+include_once(dirname(__DIR__) . '/Src/Rules/NormalRules.php');
+include_once(dirname(__DIR__) . '/Src/Validator.php');
+include_once(dirname(__DIR__) . '/Src/RequestValidator.php');
 use FurthestWorld\Validator\Src\RequestValidator;
 
-class ValidatorTest extends \PHPUnit_Framework_TestCase
-{
+class ValidatorTest extends \PHPUnit_Framework_TestCase {
 
-
-
-    public function testValidateParams()
-    {
+    public function testValidateParams() {
         $params = [
-            'title' => 'this is a title',
-            'created_at' => '2016-12-21 14:40:43'
+            'domain'     => 'furthestworld.com',
+            'member_id' => 10,
         ];
-        $rules = [
-            'title' => 'required|unique:posts|max:255',
-            'created_at' => 'required',
+        $rules  = [
+            ['name' => 'domain', 'check_rule' => 'number|string#string:1,500'],
+            ['name' => 'member_id', 'check_rule' => 'numberGt0'],
         ];
-        $res = RequestValidator::validateParams($params, $rules);
-        var_dump($res);
+        RequestValidator::validateParams($params, $rules);
+        if (!RequestValidator::pass()) {
+            var_dump(RequestValidator::getErrors());
+        }
     }
 
 

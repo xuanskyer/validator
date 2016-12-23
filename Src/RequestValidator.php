@@ -9,7 +9,7 @@ namespace FurthestWorld\Validator\Src;
 
 
 use FurthestWorld\Validator\Src\Code\CodeService;
-
+use FurthestWorld\Validator\Src\Rules\NormalRules;
 class RequestValidator extends Validator {
 
     const OPERATE_TYPE_OR       = '|';  //验证类型：或
@@ -17,84 +17,20 @@ class RequestValidator extends Validator {
     const OPERATE_METHOD_PARAMS = ':';  //方法和参数分割符
     const OPERATE_MULTI_PARAMS  = ',';  //多个参数直接分隔符
 
-    static $errors = [];
+    static private $errors = [];
 
-    public static function validateParams($params = [], $rules = []) {
-        // TODO: Implement validateParams() method.
-        if (!is_array($params) || empty($params)) {
-            self::$errors = [CodeService::CODE_INVALID_PARAMS];
-            return self::$errors;
-        }
-        if (!is_array($rules) || empty($rules)) {
-            self::$errors = [CodeService::CODE_INVALID_RULES];
-            return self::$errors;
-        }
-        foreach ($rules as $rule) {
-            if (!isset($rule['name']) || !isset($params[$rule['name']])) {
-                array_push(self::$errors, [$rule['name'] => CodeService::CODE_NO_PARAM_NAME]);
-            } else {
-                $res_code = self::checkAndSetCode(
-                    $rule['name'],
-                    isset($params[$rule['name']]) ? $params[$rule['name']] : '',
-                    isset($rule['check_rule']) ? $rule['check_rule'] : ''
-                );
-                if (CodeService::CODE_OK != $res_code) {
-                    return $res_code;
-                }
-            }
-        }
-        return CodeService::CODE_OK;
-    }
-
-
-    public static function checkAndSetCode($param_name = '', $param_value = '', $check_rule = '') {
-        $res_code         = CodeService::CODE_FAIL;
-        $check_or_methods = self::parseCheckMethods($check_rule);
-        foreach ($check_or_methods as $check_and_list) {
-            $res_code = self::checkParamsRule($param_name, $param_value, $check_and_list);
-            if (CodeService::CODE_OK == $res_code) {
-                self::$errors = [];
-                return $res_code;
-            }
-        }
-
-        return $res_code;
-    }
+    static $check_res = false;  //验证是否通过
 
     /**
-     * @node_name 参数验证方法
-     * @param string $param_name 参数名
-     * @param string $param_value
-     * @param array  $and_methods
-     * @return int|mixed
+     * @desc 是否验证通过
+     * @return bool
      */
-    public static function checkParamsRule($param_name = '', $param_value = '', $and_methods = []) {
-        $res_code = CodeService::CODE_FAIL;
-        if (empty($param_name)) {
-            $res_code = CodeService::CODE_NO_PARAM_NAME;
-        } else {
-            if (!is_array($and_methods) || empty($and_methods)) {
-                return $res_code;
-            }
-            foreach ($and_methods as $method_params) {
-                $class_name  = $method_params[0][0];
-                $method_name = $method_params[0][1];
-                if (!method_exists(new $class_name(), $method_name)) {
-                    return CodeService::CODE_INVALID_CHECK_TYPE;
-                } else {
-                    $check_params = isset($method_params[1]) ? $method_params[1] : [];
-                    array_unshift($check_params, $param_value);
-                    $res_code = call_user_func_array(
-                        [$class_name, $method_name],
-                        $check_params
-                    );
-                    if (CodeService::CODE_OK !== $res_code) {
-                        return $res_code;
-                    }
-                }
-            }
-        }
-        return $res_code;
+    public static function pass() {
+        return self::$check_res;
+    }
+
+    public static function getErrors() {
+        return self::$errors;
     }
 
     /**
@@ -135,7 +71,7 @@ class RequestValidator extends Validator {
                 }
                 if (isset($val['format_method']) && !empty($val['format_method'])) {
                     $explode_method = explode(self::OPERATE_METHOD_PARAMS, $val['format_method'], 2);
-                    if (method_exists(new self(), $explode_method[0])) {
+                    if (method_exists(new NormalRules(), $explode_method[0])) {
                         $method_param         = isset($explode_method[1]) && isset($params[$explode_method[1]])
                             ? $params[$explode_method[1]]
                             : (isset($params[$val['name']]) ? $params[$val['name']] : '');
@@ -153,7 +89,83 @@ class RequestValidator extends Validator {
         return $params;
     }
 
+    public static function validateParams($params = [], $rules = []) {
+        if (!is_array($params) || empty($params)) {
+            self::$errors = [CodeService::CODE_INVALID_PARAMS];
+            return false;
+        }
+        if (!is_array($rules) || empty($rules)) {
+            self::$errors = [CodeService::CODE_INVALID_RULES];
+            return false;
+        }
+        foreach ($rules as $rule) {
+            if (!isset($rule['name']) || !isset($params[$rule['name']])) {
+                array_push(self::$errors, [$rule['name'] => CodeService::CODE_NO_PARAM_NAME]);
+                return false;
+            } else {
+                $res_code = self::checkAndSetCode(
+                    $rule['name'],
+                    isset($params[$rule['name']]) ? $params[$rule['name']] : '',
+                    isset($rule['check_rule']) ? $rule['check_rule'] : ''
+                );
 
+                if (CodeService::CODE_OK != $res_code) {
+                    self::$errors = [$rule['name'] => $res_code];
+                    return false;
+                }
+            }
+        }
+        return CodeService::CODE_OK;
+    }
+
+
+    public static function checkAndSetCode($param_name = '', $param_value = '', $check_rule = '') {
+        $res_code         = CodeService::CODE_FAIL;
+        $check_or_methods = self::parseCheckMethods($check_rule);
+        foreach ($check_or_methods as $check_and_list) {
+            $res_code = self::checkParamsRule($param_name, $param_value, $check_and_list);
+            if (CodeService::CODE_OK == $res_code) {
+                self::$errors = [];
+                return $res_code;
+            }
+        }
+
+        return $res_code;
+    }
+
+    /**
+     * @node_name 参数验证方法
+     * @param string $param_name 参数名
+     * @param string $param_value
+     * @param array  $and_methods
+     * @return int|mixed
+     */
+    public static function checkParamsRule($param_name = '', $param_value = '', $and_methods = []) {
+        if (empty($param_name)) {
+            return CodeService::CODE_NO_PARAM_NAME;
+        }
+        if (!is_array($and_methods) || empty($and_methods)) {
+            return CodeService::CODE_INVALID_RULES;
+        }
+        foreach ($and_methods as $method_params) {
+            $class_name  = $method_params[0][0];
+            $method_name = $method_params[0][1];
+            if (!method_exists(new $class_name(), $method_name)) {
+                return CodeService::CODE_NO_EXISTED_CHECK_METHOD;
+            } else {
+                $check_params = isset($method_params[1]) ? $method_params[1] : [];
+                array_unshift($check_params, $param_value);
+                $res_code = call_user_func_array(
+                    [$class_name, $method_name],
+                    $check_params
+                );
+                if (CodeService::CODE_OK !== $res_code) {
+                    return $res_code;
+                }
+            }
+        }
+        return CodeService::CODE_OK;
+    }
 
     /**
      * @node_name 解析验证规则方法和参数
@@ -187,7 +199,7 @@ class RequestValidator extends Validator {
                 }
                 $check_exp  = explode(self::OPERATE_METHOD_PARAMS, $check);
                 $check_name = "param" . ucfirst($check_exp[0]);
-                if (method_exists(new self(), $check_name)) {
+                if (method_exists(new NormalRules(), $check_name)) {
                     $check_params = [];
                     if (isset($check_exp[1]) && !empty($check_exp[1])) {
                         $check_params = explode(self::OPERATE_MULTI_PARAMS, $check_exp[1]);
