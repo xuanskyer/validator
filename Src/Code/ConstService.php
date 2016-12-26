@@ -50,7 +50,7 @@ class CodeService {
     const CODE_INVALID_ALPHA_DASH      = [1027, '参数仅允许字母、数字、破折号（-）以及底线（_）！'];
 
     //2000-以后，用户自定义错误码
-    
+
 
     public static function message($code = 0) {
 

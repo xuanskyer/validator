@@ -29,6 +29,13 @@ class Validator {
     public static function pass() {
         return self::$check_res;
     }
+    /**
+     * @desc 是否位验证通过
+     * @return bool
+     */
+    public static function fail() {
+        return !self::$check_res;
+    }
 
     public static function getErrors() {
         return self::$errors;
