@@ -35,6 +35,20 @@ class NormalRules {
     }
 
     /**
+     * @node_name 验证是否是布尔型或可转换为布尔型
+     * @param $param_value
+     * @return array
+     */
+    public static function checkBoolean($param_value) {
+        $acceptable = [true, false, 0, 1, '0', '1'];
+
+        if (is_null($param_value) || in_array($param_value, $acceptable, true)) {
+            return CodeService::CODE_OK;
+        }
+        return CodeService::CODE_INVALID_BOOL;
+    }
+
+    /**
      * @node_name 要求参数必须为数字
      * @return int
      */
@@ -116,11 +130,11 @@ class NormalRules {
      * @return array
      */
     public static function checkValidDate($param_value, $check_format = '') {
-        if(empty($check_format)){
+        if (empty($check_format)) {
             return strtotime($param_value) ? CodeService::CODE_OK : CodeService::CODE_INVALID_DATE;
         }
         $res = date_parse_from_format($check_format, $param_value);
-        if(0 == $res['warning_count'] && 0 == $res['error_count']){
+        if (0 == $res['warning_count'] && 0 == $res['error_count']) {
             return CodeService::CODE_OK;
         }
         return CodeService::CODE_INVALID_DATE;
@@ -144,7 +158,7 @@ class NormalRules {
      * @return array
      */
     public static function checkJson($param_value) {
-        if (! is_scalar($param_value) && ! method_exists($param_value, '__toString')) {
+        if (!is_scalar($param_value) && !method_exists($param_value, '__toString')) {
             return CodeService::CODE_INVALID_JSON;
         }
 

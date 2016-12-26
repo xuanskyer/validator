@@ -18,7 +18,8 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase {
             'domain'    => 'furthestworld.com',
             'member_id' => 10,
             'level_id' => '20',
-            'created_at' => '2016-12-23 18:28:40'
+            'created_at' => '2016-12-23 18:28:40',
+            'bool' => '0',
         ];
         Validator::extend('extend_test', new TestExtendRules());
         Validator::formatParams(
@@ -28,6 +29,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase {
                 'member_id' => ['format_rule' => 'formatExtendMemberId:domain'],
                 'level_id' => [],
                 'created_at' => [],
+                'bool' => []
             ]
         );
         Validator::validateParams(
@@ -37,6 +39,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase {
                 'member_id' => ['check_rule' => 'extendEq:20#number:1,20#in:1,2,3,4,20'],
                 'level_id' => ['check_rule' => 'same:'.$params['member_id']],
                 'created_at' => ['check_rule' => 'validDate'],
+                'bool' => ['check_rule' => 'boolean']
             ]
         );
 

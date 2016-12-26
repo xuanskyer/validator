@@ -41,6 +41,7 @@ class CodeService {
     const CODE_NOT_IN_LIST             = [1019, '参数不在指定列表中！'];
     const CODE_INVALID_DATE            = [1020, '日期格式非法！'];
     const CODE_INVALID_JSON            = [1021, 'json格式非法！'];
+    const CODE_INVALID_BOOL            = [1022, '非法布尔类型！'];
 
     public static function message($code = 0) {
 
