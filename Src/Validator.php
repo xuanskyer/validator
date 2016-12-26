@@ -17,7 +17,7 @@ class Validator {
     const OPERATE_TYPE_AND      = '#';  //验证类型：与
     const OPERATE_METHOD_PARAMS = ':';  //方法和参数分割符
     const OPERATE_MULTI_PARAMS  = ',';  //多个参数直接分隔符
-
+    const CUSTOM_ERROR_CODE_MIN = 2000; //用户自定义错误码最小值
     static private $errors       = [];
     static private $extend_rules = [];
     static private $check_res    = false;  //验证是否通过
@@ -71,16 +71,16 @@ class Validator {
                     continue;
                 }
                 if (isset($rule['format_rule']) && !empty($rule['format_rule'])) {
-                    $explode_method = explode(self::OPERATE_METHOD_PARAMS, $rule['format_rule'], 2);
-                    $method_param   = isset($explode_method[1]) && isset($params[$explode_method[1]])
+                    $explode_method   = explode(self::OPERATE_METHOD_PARAMS, $rule['format_rule'], 2);
+                    $method_param     = isset($explode_method[1]) && isset($params[$explode_method[1]])
                         ? $params[$explode_method[1]]
                         : (isset($params[$field]) ? $params[$field] : '');
                     $normal_rules_obj = new NormalRules();
                     if (method_exists($normal_rules_obj, $explode_method[0])) {
                         $params[$field] = call_user_func([get_class($normal_rules_obj), $explode_method[0]], $method_param);
-                    }else if (function_exists($explode_method[0])) {
+                    } else if (function_exists($explode_method[0])) {
                         $params[$field] = $explode_method[0]($method_param);
-                    }else{
+                    } else {
                         foreach (self::$extend_rules as $extend_name => $extend_obj) {
                             if (method_exists($extend_obj, $explode_method[0])) {
                                 $params[$field] = call_user_func([get_class($extend_obj), $explode_method[0]], $method_param);
@@ -99,7 +99,7 @@ class Validator {
      * @param array $rules
      * @return array|bool
      */
-    public static function validateParams($params = [], $rules = []) {
+    public static function validateParams($params = [], $rules = [], $code_info = []) {
         if (!is_array($params) || empty($params)) {
             self::$errors = [CodeService::CODE_INVALID_PARAMS];
             return false;
@@ -124,7 +124,11 @@ class Validator {
                 );
 
                 if (CodeService::CODE_OK != $res_code) {
-                    self::$errors = [$field => $res_code];
+                    if (isset($code_info[$field][0]) && $code_info[$field][0] >= self::CUSTOM_ERROR_CODE_MIN) {
+                        self::$errors = [$field => $code_info[$field]];
+                    } else {
+                        self::$errors = [$field => $res_code];
+                    }
                     return false;
                 }
             }

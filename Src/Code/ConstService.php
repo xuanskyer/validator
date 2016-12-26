@@ -16,9 +16,10 @@ class CodeService {
     const CODE_FAIL = [0, '验证失败'];
     const CODE_OK   = [1, '验证成功'];
 
+    //1-1000保留为内部错误码使用
     const CODE_INVALID_PARAMS = [100, '非法参数：参数必须为数组！'];
     const CODE_INVALID_RULES  = [101, '非法验证规则：验证规则必须为数组！'];
-    //1-1000保留为内部错误码使用
+    //1000-1999 内部错误码
     const CODE_PARAM_OK                = [1000, '参数验证通过！'];
     const CODE_NO_PARAM_NAME           = [1001, '参数名不能为空！'];
     const CODE_INVALID_CHECK_TYPE      = [1002, '参数验证方式非法！'];
@@ -47,6 +48,9 @@ class CodeService {
     const CODE_INVALID_ALPHA_LOWER     = [1025, '参数必须为小写字母！'];
     const CODE_INVALID_ALPHA_NUM       = [1026, '参数必须为字母或数字！'];
     const CODE_INVALID_ALPHA_DASH      = [1027, '参数仅允许字母、数字、破折号（-）以及底线（_）！'];
+
+    //2000-以后，用户自定义错误码
+    
 
     public static function message($code = 0) {
 
