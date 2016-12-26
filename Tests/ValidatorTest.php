@@ -15,7 +15,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase {
     public function testValidateParams() {
 
         $params = [
-            'domain'    => 'furthestworld.com',
+            'domain'    => 'furthe32-_&stworldcom',
             'member_id' => 10,
             'level_id' => '20',
             'created_at' => '2016-12-23 18:28:40',
@@ -32,10 +32,11 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase {
                 'bool' => []
             ]
         );
+        var_dump($params);
         Validator::validateParams(
             $params,
             [
-                'domain'    => ['check_rule' => 'number|string#string:10,500'],
+                'domain'    => ['check_rule' => 'number|alphaDash#string#string:10,500'],
                 'member_id' => ['check_rule' => 'extendEq:20#number:1,20#in:1,2,3,4,20'],
                 'level_id' => ['check_rule' => 'same:'.$params['member_id']],
                 'created_at' => ['check_rule' => 'validDate'],

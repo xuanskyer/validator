@@ -42,6 +42,11 @@ class CodeService {
     const CODE_INVALID_DATE            = [1020, '日期格式非法！'];
     const CODE_INVALID_JSON            = [1021, 'json格式非法！'];
     const CODE_INVALID_BOOL            = [1022, '非法布尔类型！'];
+    const CODE_INVALID_ALPHA           = [1023, '参数必须为字母！'];
+    const CODE_INVALID_ALPHA_UPPER     = [1024, '参数必须为大写字母！'];
+    const CODE_INVALID_ALPHA_LOWER     = [1025, '参数必须为小写字母！'];
+    const CODE_INVALID_ALPHA_NUM       = [1026, '参数必须为字母或数字！'];
+    const CODE_INVALID_ALPHA_DASH      = [1027, '参数仅允许字母、数字、破折号（-）以及底线（_）！'];
 
     public static function message($code = 0) {
 

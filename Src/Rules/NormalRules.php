@@ -111,6 +111,57 @@ class NormalRules {
     }
 
     /**
+     * @node_name 验证是否为字母
+     * @param        $param_value
+     * @param string $alpha_type    空：不区分大小写，lower-全小写，upper-全大写
+     * @return bool
+     */
+    public static function checkAlpha($param_value, $alpha_type = '') {
+        if(!is_string($param_value)){
+            return CodeService::CODE_INVALID_ALPHA;
+        }
+        switch($alpha_type){
+            case 'upper':
+                return preg_match('/^[A-Z]+$/u', $param_value) ? CodeService::CODE_OK : CodeService::CODE_INVALID_ALPHA_UPPER;
+                break;
+            case 'lower':
+                return preg_match('/^[a-z]+$/u', $param_value) ? CodeService::CODE_OK : CodeService::CODE_INVALID_ALPHA_LOWER;
+                break;
+            default:
+                return preg_match('/^[a-zA-Z]+$/u', $param_value) ? CodeService::CODE_OK : CodeService::CODE_INVALID_ALPHA;
+                break;
+        }
+    }
+
+    /**
+     * @node_name 字段值仅允许字母、数字
+     * @param $param_value
+     * @return array
+     */
+    public static function checkAlphaNum($param_value) {
+        if(!is_string($param_value) && !is_numeric($param_value)){
+            return CodeService::CODE_INVALID_ALPHA_NUM;
+        }
+
+        return preg_match('/^[0-9a-zA-Z]+$/u', $param_value) ? CodeService::CODE_OK : CodeService::CODE_INVALID_ALPHA_NUM;
+
+    }
+
+    /**
+     * @node_name 字段值仅允许字母、数字、破折号（-）以及底线（_）
+     * @param $param_value
+     * @return array
+     */
+    public static function checkAlphaDash($param_value) {
+        if(!is_string($param_value) && !is_numeric($param_value)){
+            return CodeService::CODE_INVALID_ALPHA_DASH;
+        }
+
+        return preg_match('/^[0-9a-zA-Z-_]+$/u', $param_value) ? CodeService::CODE_OK : CodeService::CODE_INVALID_ALPHA_DASH;
+
+    }
+
+    /**
      * @node_name 验证是否相等
      * @param $param_value
      * @param $compare_value
