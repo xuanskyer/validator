@@ -144,7 +144,12 @@ class NormalRules {
      * @return array
      */
     public static function checkJson($param_value) {
-        return CodeService::CODE_OK;
+        if (! is_scalar($param_value) && ! method_exists($param_value, '__toString')) {
+            return CodeService::CODE_INVALID_JSON;
+        }
+
+        json_decode($param_value);
+        return json_last_error() === JSON_ERROR_NONE ? CodeService::CODE_OK : CodeService::CODE_INVALID_JSON;
     }
 
     /**
