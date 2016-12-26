@@ -5,7 +5,7 @@
  * 这是一个很不规范的测试用例，请不要在意这些细节~~
  */
 
-include_once(dirname(__DIR__) . '/Src/Code/ConstService.php');
+include_once(dirname(__DIR__) . '/Src/Code/CodeService.php');
 include_once(dirname(__DIR__) . '/Src/Rules/NormalRules.php');
 include_once(dirname(__DIR__) . '/Src/Validator.php');
 use FurthestWorld\Validator\Src\Validator;
