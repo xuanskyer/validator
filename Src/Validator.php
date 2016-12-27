@@ -236,7 +236,7 @@ class Validator {
                 if (empty($check)) {
                     continue;
                 }
-                $check_exp  = explode(self::OPERATE_METHOD_PARAMS, $check);
+                $check_exp  = explode(self::OPERATE_METHOD_PARAMS, $check, 2);
                 $check_name = "check" . ucfirst($check_exp[0]);
                 if (method_exists($normal_rule_obj, $check_name)) {
                     $check_params = [];
